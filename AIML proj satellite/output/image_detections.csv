@@ -1,0 +1,1 @@
+image_id,image_path,latitude,longitude,class,confidence,bbox_x1,bbox_y1,bbox_x2,bbox_y2,bbox_width,bbox_height,detection_lat,detection_lon

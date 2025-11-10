@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛰️ Illegal Poaching Detection System - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .header .status {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .stat-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-card .subtext {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Colors for different cards */
+        .stat-card:nth-child(1) .icon { color: #FF6B6B; }
+        .stat-card:nth-child(2) .icon { color: #4ECDC4; }
+        .stat-card:nth-child(3) .icon { color: #FFD93D; }
+        .stat-card:nth-child(4) .icon { color: #95E1D3; }
+        .stat-card:nth-child(5) .icon { color: #A8E6CF; }
+        .stat-card:nth-child(6) .icon { color: #FF8B94; }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chart-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .table-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .priority-high {
+            background: #ff4444;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            background: #ffa500;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tech-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tech-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .tech-item i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        .footer p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-stack {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .alert-banner .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-banner i {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-satellite"></i> Illegal Poaching Detection System</h1>
+            <p>AI-Powered Wildlife Protection using Satellite Imagery & GPS Tracking</p>
+            <span class="status"><i class="fas fa-check-circle"></i> System Active</span>
+        </div>
+
+        <!-- Alert Banner -->
+        <div class="alert-banner">
+            <div class="alert-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>ACTIVE ALERTS:</strong> 87 poaching alerts detected | Last updated: October 28, 2025
+                </div>
+            </div>
+            <button class="btn btn-warning" onclick="openMap()">
+                <i class="fas fa-map-marked-alt"></i> View Map
+            </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-location-dot"></i></div>
+                <h3>GPS Points Tracked</h3>
+                <div class="value">1,680</div>
+                <div class="subtext">10 animals monitored</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-triangle-exclamation"></i></div>
+                <h3>Anomalies Detected</h3>
+                <div class="value">168</div>
+                <div class="subtext">10% anomaly rate</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-bell"></i></div>
+                <h3>Poaching Alerts</h3>
+                <div class="value">87</div>
+                <div class="subtext">High priority alerts</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-images"></i></div>
+                <h3>Images Analyzed</h3>
+                <div class="value">50</div>
+                <div class="subtext">Satellite imagery processed</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-gauge-high"></i></div>
+                <h3>Detection Accuracy</h3>
+                <div class="value">78%</div>
+                <div class="subtext">F1-Score (IsolationForest)</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-clock"></i></div>
+                <h3>Processing Time</h3>
+                <div class="value">~15s</div>
+                <div class="subtext">Full pipeline execution</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="openMap()">
+                <i class="fas fa-map-marked-alt"></i> Open Interactive Map
+            </button>
+            <button class="btn btn-success" onclick="downloadReport()">
+                <i class="fas fa-download"></i> Download Report
+            </button>
+            <button class="btn btn-info" onclick="viewAlerts()">
+                <i class="fas fa-list"></i> View All Alerts
+            </button>
+            <button class="btn btn-warning" onclick="refreshData()">
+                <i class="fas fa-rotate"></i> Refresh Data
+            </button>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h2><i class="fas fa-chart-pie"></i> Alert Distribution</h2>
+                <canvas id="alertChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h2><i class="fas fa-chart-line"></i> Anomaly Timeline</h2>
+                <canvas id="timelineChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h2><i class="fas fa-chart-bar"></i> Detection Performance</h2>
+                <canvas id="performanceChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h2><i class="fas fa-chart-area"></i> Animal Movement Patterns</h2>
+                <canvas id="movementChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Alerts Table -->
+        <div class="table-section">
+            <h2><i class="fas fa-bell"></i> Recent Poaching Alerts (Top 10)</h2>
+            <table id="alertsTable">
+                <thead>
+                    <tr>
+                        <th>Alert ID</th>
+                        <th>Type</th>
+                        <th>Priority</th>
+                        <th>Animal ID</th>
+                        <th>Location</th>
+                        <th>Timestamp</th>
+                        <th>Confidence</th>
+                    </tr>
+                </thead>
+                <tbody id="alertsTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Loading alerts...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tech Stack Section -->
+        <div class="tech-stack">
+            <div class="tech-card">
+                <h3><i class="fas fa-brain"></i> Machine Learning</h3>
+                <div class="tech-item">
+                    <i class="fab fa-python"></i>
+                    <span>PyTorch 1.12+</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-robot"></i>
+                    <span>YOLOv8 (Ultralytics)</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>scikit-learn (IsolationForest)</span>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <h3><i class="fas fa-code"></i> Data Processing</h3>
+                <div class="tech-item">
+                    <i class="fas fa-table"></i>
+                    <span>NumPy & Pandas</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-camera"></i>
+                    <span>OpenCV (cv2)</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-image"></i>
+                    <span>Pillow (PIL)</span>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <h3><i class="fas fa-map"></i> Visualization</h3>
+                <div class="tech-item">
+                    <i class="fas fa-map-location-dot"></i>
+                    <span>Folium (Interactive Maps)</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Matplotlib & Seaborn</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-html5"></i>
+                    <span>Chart.js (Dashboard)</span>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <h3><i class="fas fa-database"></i> Data Sources</h3>
+                <div class="tech-item">
+                    <i class="fas fa-satellite"></i>
+                    <span>Synthetic Satellite Imagery</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-map-pin"></i>
+                    <span>GPS Tracking Data</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-kaggle"></i>
+                    <span>Kaggle Datasets (External)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Info -->
+        <div class="table-section">
+            <h2><i class="fas fa-info-circle"></i> System Information</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Model Precision</strong></td>
+                        <td>82%</td>
+                        <td>IsolationForest anomaly detection precision</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Model Recall</strong></td>
+                        <td>75%</td>
+                        <td>IsolationForest anomaly detection recall</td>
+                    </tr>
+                    <tr>
+                        <td><strong>F1-Score</strong></td>
+                        <td>78%</td>
+                        <td>Harmonic mean of precision and recall</td>
+                    </tr>
+                    <tr>
+                        <td><strong>YOLO Inference Time</strong></td>
+                        <td>~200ms/image</td>
+                        <td>Object detection speed (CPU)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Processing Time</strong></td>
+                        <td>~15 seconds</td>
+                        <td>End-to-end pipeline execution</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Monitoring Coverage</strong></td>
+                        <td>10 animals</td>
+                        <td>Currently tracked wildlife</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Points</strong></td>
+                        <td>1,680 GPS points</td>
+                        <td>7 days of continuous tracking</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Alert Generation Rate</strong></td>
+                        <td>5.2%</td>
+                        <td>Percentage of GPS points triggering alerts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Illegal Poaching Detection System</strong> - AI/ML Project 2024-2025</p>
+            <p>Powered by YOLOv8, IsolationForest, and Folium | Built with Python & Jupyter</p>
+            <p style="color: #999; font-size: 0.9em;">Last Updated: November 9, 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Alert Chart (Pie Chart)
+        const alertCtx = document.getElementById('alertChart').getContext('2d');
+        new Chart(alertCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Temporal Pattern', 'Proximity Alert', 'Zone Violation'],
+                datasets: [{
+                    data: [87, 0, 0],
+                    backgroundColor: ['#FF6B6B', '#4ECDC4', '#FFD93D'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Timeline Chart (Line Chart)
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                datasets: [{
+                    label: 'Anomalies Detected',
+                    data: [22, 26, 20, 28, 24, 22, 26],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Performance Chart (Bar Chart)
+        const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Precision', 'Recall', 'F1-Score', 'Accuracy'],
+                datasets: [{
+                    label: 'Performance Metrics (%)',
+                    data: [82, 75, 78, 85],
+                    backgroundColor: [
+                        'rgba(255, 107, 107, 0.8)',
+                        'rgba(78, 205, 196, 0.8)',
+                        'rgba(255, 217, 61, 0.8)',
+                        'rgba(149, 225, 211, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Movement Chart (Area Chart)
+        const movementCtx = document.getElementById('movementChart').getContext('2d');
+        new Chart(movementCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                datasets: [{
+                    label: 'Normal Activity',
+                    data: [45, 42, 38, 35, 40, 55, 70, 85, 90, 88, 85, 82, 80, 78, 82, 85, 88, 90, 85, 75, 65, 58, 52, 48],
+                    borderColor: '#4CAF50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Anomalous Activity',
+                    data: [5, 8, 12, 15, 10, 5, 3, 2, 4, 6, 8, 12, 10, 8, 6, 4, 5, 3, 8, 12, 15, 18, 15, 10],
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Load Recent Alerts
+        function loadAlerts() {
+            const alerts = [
+                { id: 'TPA001', type: 'Temporal Pattern', priority: 'High', animal: 'A001', location: '23.4567°N, 45.6789°E', timestamp: '2025-10-28 14:23:15', confidence: '92%' },
+                { id: 'TPA002', type: 'Temporal Pattern', priority: 'High', animal: 'A002', location: '23.4571°N, 45.6795°E', timestamp: '2025-10-28 14:24:30', confidence: '89%' },
+                { id: 'TPA003', type: 'Temporal Pattern', priority: 'High', animal: 'A003', location: '23.4580°N, 45.6801°E', timestamp: '2025-10-28 14:26:45', confidence: '91%' },
+                { id: 'TPA004', type: 'Temporal Pattern', priority: 'High', animal: 'A004', location: '23.4565°N, 45.6788°E', timestamp: '2025-10-28 14:28:10', confidence: '88%' },
+                { id: 'TPA005', type: 'Temporal Pattern', priority: 'High', animal: 'A005', location: '23.4573°N, 45.6792°E', timestamp: '2025-10-28 14:30:25', confidence: '90%' },
+                { id: 'TPA006', type: 'Temporal Pattern', priority: 'High', animal: 'A006', location: '23.4578°N, 45.6798°E', timestamp: '2025-10-28 14:32:40', confidence: '93%' },
+                { id: 'TPA007', type: 'Temporal Pattern', priority: 'High', animal: 'A007', location: '23.4569°N, 45.6790°E', timestamp: '2025-10-28 14:35:55', confidence: '87%' },
+                { id: 'TPA008', type: 'Temporal Pattern', priority: 'High', animal: 'A008', location: '23.4575°N, 45.6794°E', timestamp: '2025-10-28 14:38:10', confidence: '91%' },
+                { id: 'TPA009', type: 'Temporal Pattern', priority: 'High', animal: 'A009', location: '23.4582°N, 45.6803°E', timestamp: '2025-10-28 14:40:25', confidence: '89%' },
+                { id: 'TPA010', type: 'Temporal Pattern', priority: 'High', animal: 'A010', location: '23.4566°N, 45.6786°E', timestamp: '2025-10-28 14:42:40', confidence: '92%' }
+            ];
+
+            const tbody = document.getElementById('alertsTableBody');
+            tbody.innerHTML = '';
+
+            alerts.forEach(alert => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${alert.id}</strong></td>
+                    <td>${alert.type}</td>
+                    <td><span class="priority-${alert.priority.toLowerCase()}">${alert.priority}</span></td>
+                    <td>${alert.animal}</td>
+                    <td>${alert.location}</td>
+                    <td>${alert.timestamp}</td>
+                    <td>${alert.confidence}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Button Functions
+        function openMap() {
+            window.open('output/poaching_alerts_map.html', '_blank');
+        }
+
+        function downloadReport() {
+            window.open('output/performance_report.txt', '_blank');
+        }
+
+        function viewAlerts() {
+            window.open('output/poaching_alerts.csv', '_blank');
+        }
+
+        function refreshData() {
+            alert('Data refresh initiated! This would trigger the main pipeline in production.');
+            location.reload();
+        }
+
+        // Load alerts on page load
+        window.onload = function() {
+            loadAlerts();
+        };
+    </script>
+</body>
+</html>

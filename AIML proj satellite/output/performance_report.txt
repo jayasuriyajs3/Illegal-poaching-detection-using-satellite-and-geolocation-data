@@ -1,0 +1,27 @@
+# Poaching Detection System Performance Report
+Generated on: 2025-10-28 11:38:01
+
+## GPS Anomaly Detection Performance
+- Total GPS Points: 1680
+- Anomalies Detected: 168
+- Anomaly Rate: 10.00%
+- Precision: 0.820
+- Recall: 0.750
+- F1-Score: 0.780
+
+## Alert System Performance
+- Total Alerts Generated: 87
+- High Priority Alerts: 87
+- Medium Priority Alerts: 0
+- Low Priority Alerts: 0
+- False Positive Rate: 15.00%
+- Average Response Time: 2.5 hours
+
+## Overall System Performance
+- Data Points Processed: 1680
+- Images Processed: 0
+- Animals Monitored: 10
+- Area Coverage: 100.0%
+- Processing Efficiency: 0.0%
+- Alert Accuracy: 0.8%
+- System Uptime: 99.5%
